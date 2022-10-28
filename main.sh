@@ -20,9 +20,7 @@ cd ..
 mkdir Mapping
 chmod -R 777 Mapping
 
-# unzip -o *.zip
-# gunzip -c *.fq.gz | awk '{if(NR%4==1) {printf(">%s\n",substr($0,2));} else if(NR%4==2) print;}' > /home/$USER/ICA1/Mapping/*.fasta
-
+# unzip -o *.zip | gunzip -c *.fq.gz | awk '{if(NR%4==1) {printf(">%s\n",substr($0,2));} else if(NR%4==2) print;}' > /home/$USER/ICA1/Mapping/*.fasta
 # mv *.zip /home/$USER/ICA1/Mapping
 # mv *.html /home/$USER/ICA1/Mapping
 
@@ -44,4 +42,12 @@ cd ..
 cd Mapping
 ls
 
-. /home/$USER/bowtie2.sh
+while true; do
+    read -p "We will now proceed to aligning our read sequences with Bowtie2? Please answer Y to proceed or N to cancel." yn
+    case $yn in
+        [Yy]* ) source /home/$USER/bowtie2.sh; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
+

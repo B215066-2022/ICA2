@@ -44,4 +44,4 @@ cd ..
 cd Mapping
 ls
 
-source bowtie2.sh
+. /home/$USER/bowtie2.sh

@@ -2,6 +2,7 @@
 
 pwd
 mkdir ICA1
+chmod -R 777 ~/home/$USER/ICA1
 cd ICA1
 
 git init # Initialising git
@@ -18,8 +19,7 @@ ls
 # Let's make a new directory ICA1/Mapping so that all our read sequences can be grouped together to map with the reference genome
 cd ..
 mkdir Mapping
-chmod -R 777 ~/home/$USER/ICA1
-chmod -R 777 ~/home/$USER/ICA1
+chmod -R 777 ~/home/$USER/ICA1/Mapping
 
 # unzip -o *.zip | gunzip -c *.fq.gz | awk '{if(NR%4==1) {printf(">%s\n",substr($0,2));} else if(NR%4==2) print;}' > /home/$USER/ICA1/Mapping/*.fasta
 # mv *.zip /home/$USER/ICA1/Mapping
@@ -44,7 +44,7 @@ cd Mapping
 ls
 
 while true; do
-    read -p "We will now proceed to aligning our read sequences with Bowtie2? Please answer Y to proceed or N to cancel." yn
+    read -p "Proceed to aligning our read sequences with Bowtie2? Press Y to proceed or N to cancel." yn
     case $yn in
         [Yy]* ) source /home/$USER/bowtie2.sh; break;;
         [Nn]* ) exit;;
@@ -52,3 +52,4 @@ while true; do
     esac
 done
 
+# This is probably the final version of main.sh before merging

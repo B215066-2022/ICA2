@@ -6,7 +6,7 @@ do
  	samtools sort ${k} -o ${k}.bam;
 done
 
-# This should get rid of all the annoying .fq.gzSorted.bam names
+# This should get rid of all the annoying .fq.gz.bam names
 for l in *.bam;
 do
         basename $l.bam;

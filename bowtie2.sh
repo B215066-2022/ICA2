@@ -30,16 +30,18 @@ ls
 # 	echo "bowtie2 -p 4 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz/_2.fq.gz}Aligned.sam";
 # done 
 # This will show the paths to our pair sequence files, the corresponding SAM files
-
 # Hooray, that works! Let's do this
 for i in $(ls /home/$USER/ICA1/Mapping/*1.fq.gz); 
 do 
- 	bowtie2 --threads 48 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz}_2Aligned.sam;
+ 	bowtie2 --threads 48 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz}Aligned.sam;
 done
 ls
 
+for j in *.sam;
+do 
+	basename $j.sam;
+done | sed ':a;N;$!ba;s/\n/ /g'
+
 rm -f *.fq.gz # Remove all fq gz-compressed files
-ls
 
-
-source samtools.sh
+#source /home/$USER/samtools.sh

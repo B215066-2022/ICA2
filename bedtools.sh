@@ -15,7 +15,7 @@ ls
 # Finds all unique overlaps in the genomes with the read sequences
 for p in $(ls /home/$USER/ICA1/Mapping/*.bed);
 do
-	bedtools intersect -wa -a Tco-genome3000.bed -b ${p} | sort | uniq > ${p}IntersectOutput.txt
+	bedtools intersect -c -a Tco-genome3000.bed -b ${p} > ${p}Intersect.txt
 done
 ls
 

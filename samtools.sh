@@ -3,7 +3,7 @@
 # This should sort our sam files accordinly before they can all be used to map against our bedfile with bedtools
 for k in $(ls /home/$USER/ICA1/Mapping/*.sam); 
 do
- 	samtools sort ${k} -o ${k}Sorted.bam;
+ 	samtools sort ${k} -o ${k}.bam;
 done
 
 # This should get rid of all the annoying .fq.gzSorted.bam names

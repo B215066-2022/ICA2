@@ -48,7 +48,7 @@ rm -f *.fq.gz # Remove all fq gz-compressed files
 ls
 
 while true; do
-    read -p "Do you wish to proceed?" yn
+    read -p "We will now proceed to  sorting our sequences with samtools. Do you wish to proceed? Press Y to proceed or N to cancel." yn
     case $yn in
         [Yy]* ) source /home/$USER/samtools.sh; break;;
         [Nn]* ) exit;;

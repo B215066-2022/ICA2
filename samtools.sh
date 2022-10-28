@@ -3,25 +3,28 @@
 # This should sort our sam files accordinly before they can all be used to map against our bedfile with bedtools
 for k in $(ls /home/$USER/ICA1/Mapping/*.sam); 
 do
-	samtools sort -o ${j}Sorted.bam ${j};
+ 	samtools sort ${k} -o ${k}Sorted.bam;
 done
 
-# Get rid of the annoying .samSorted.bam file names
-for k in *.bam;
+# This should get rid of all the annoying .fq.gzSorted.bam names
+for l in *.bam;
 do
-	basename $k .bam;
+        basename $l.bam;
 done | sed ':a;N;$!ba;s/\n/ /g'
 ls
 
-# This should index all our bam files
+rm -f *.fq.gz # Remove all fq gz-compressed files
+ls
+
+# Index our bam files
 ls *.bam | parallel samtools index '{}'
 
-# Get rid of the annoying .samSorted.bam.bai file names
-for l in *.bai;
-do
-        basename $l .bai;
-done | sed ':a;N;$!ba;s/\n/ /g'
-ls
+while true; do
+    read -p "We will now proceed to mapping our read sequences with Bedtools? Please answer Y to proceed or N to cancel." yn
+    case $yn in
+        [Yy]* ) source /home/$USER/bedtools.sh; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
 
-
-source /home/$USER/bedtools.sh

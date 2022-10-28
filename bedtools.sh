@@ -5,20 +5,14 @@ cp -r /localdisk/data/BPSM/ICA1/TriTrypDB-46_TcongolenseIL3000_2019.bed /home/$U
 mv TriTrypDB-46_TcongolenseIL3000_2019.bed Tco-genome3000.bed # As usual, we don't like long, complicated names
 ls # The bedfile should have been renamed by now
 
-# Convert bam files to bed
-for k in $(ls /home/$USER/ICA1/Mapping/*.bam);
+# Convert bam files to bed first - this will ease looking at intersect
+for o in $(ls /home/$USER/ICA1/Mapping/*.bam);
 do 
-	bedtools bamtobed -i ${k} > ${k}.bed
+	bedtools bamtobed -i ${o} > ${o}.bed
 done
 ls
 
-# Time to look for overlapped regions that code for genes
-for l in $(ls /home/$USER/ICA1/Mapping/*.bed); 
-do
-bedtools intersect -a  Tco-genome3000.bed -b ${l} -wa -names ${l} -sorted > ${l}Overlapped.txt; # Print output of overlapped regions in txt files
-done
 
-#bedtools intersect -a Tco-6950_2Aligned.samSorted.bam.bed -b Tco-genome3000.bed -wa > TestOverlapped.txt
 
 
 # REFERENCES

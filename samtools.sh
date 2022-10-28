@@ -20,7 +20,7 @@ ls
 ls *.bam | parallel samtools index '{}'
 
 while true; do
-    read -p "We will now proceed to mapping our read sequences with Bedtools. Please press Y to proceed or N to cancel." yn
+    read -p "Proceed to mapping our read sequences with Bedtools? Press Y to proceed or N to cancel." yn
     case $yn in
         [Yy]* ) source /home/$USER/bedtools.sh; break;;
         [Nn]* ) exit;;

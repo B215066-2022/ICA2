@@ -37,11 +37,22 @@ do
 done
 ls
 
+# This should get rid of all the annoying .fq.gz.bam names
 for j in *.sam;
 do 
 	basename $j.sam;
 done | sed ':a;N;$!ba;s/\n/ /g'
+ls
 
 rm -f *.fq.gz # Remove all fq gz-compressed files
+ls
 
-#source /home/$USER/samtools.sh
+while true; do
+    read -p "Do you wish to proceed?" yn
+    case $yn in
+        [Yy]* ) source /home/$USER/samtools.sh; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
+

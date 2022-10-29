@@ -8,16 +8,19 @@ ls # The bedfile should have been renamed by now
 # Convert bam files to bed first - this will ease looking at intersect
 for o in $(ls /home/$USER/ICA1/Mapping/*.bam);
 do 
-	bedtools bamtobed -i ${o} > ${o}.bed
-done
+	bedtools bamtobed -i ${o} > ${o/.bam}.bed
+done | sed ':a;N;$!ba;s/\n/ /g' # Remove the annoying .bam.bed filenames
 ls
 
-# Finds all unique overlaps in the genomes with the read sequences
+# Finds all genes overlapped with the read sequences
 for p in $(ls /home/$USER/ICA1/Mapping/*.bed);
 do
-	bedtools intersect -c -a Tco-genome3000.bed -b ${p} > ${p}Intersect.txt
+	bedtools intersect -c -a Tco-genome3000.bed -b ${p} > ${p/.bed}Intersect.txt
 done
-ls
+
+rm -f Tco-genome3000Intersect.txt # This should remove this Tco-genome3000Intersect.txt, as it is known  when the genome bedfile is intersected with itself, we will get 100% overlap. So, we will exclude this file.
+
+ls # this
 
 # REFERENCES
 # https://bedtools.readthedocs.io/en/latest/content/tools/map.html 

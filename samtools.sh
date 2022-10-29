@@ -3,15 +3,15 @@
 # This should sort our sam files accordinly before they can all be used to map against our bedfile with bedtools
 for k in $(ls /home/$USER/ICA1/Mapping/*.sam); 
 do
- 	samtools sort ${k} -o ${k}.bam;
-done
+ 	samtools sort ${k} -o ${k/.sam}.bam;
+done | sed ':a;N;$!ba;s/\n/ /g'
 
 # This should get rid of all the annoying .fq.gz.bam names
-for l in *.bam;
-do
-        basename $l.bam;
-done | sed ':a;N;$!ba;s/\n/ /g'
-ls
+# for l in *.bam;
+# do
+#        basename $l.bam;
+# done | sed ':a;N;$!ba;s/\n/ /g'
+# ls
 
 rm -f *.fq.gz # Remove all fq gz-compressed files
 ls

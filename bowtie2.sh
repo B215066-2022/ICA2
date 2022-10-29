@@ -33,26 +33,25 @@ ls
 # Hooray, that works! Let's do this
 for i in $(ls /home/$USER/ICA1/Mapping/*1.fq.gz); 
 do 
- 	bowtie2 --threads 48 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz}Aligned.sam;
-done
+ 	bowtie2 --threads 48 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz}.sam;
+done | sed ':a;N;$!ba;s/\n/ /g'
 ls
 
 # This should get rid of all the annoying .fq.gz.bam names
-for j in *.sam;
-do 
-	basename $j.sam;
-done | sed ':a;N;$!ba;s/\n/ /g'
-ls
+# for j in *.sam;
+# do 
+#	basename $j.sam;
+# done | sed ':a;N;$!ba;s/\n/ /g'
+# ls
 
 rm -f *.fq.gz # Remove all fq gz-compressed files
 ls
 
 while true; do
-    read -p "We will now proceed to  sorting our sequences with samtools. Do you wish to proceed? Press Y to proceed or N to cancel." yn
+    read -p "Proceed to sorting our sequences with samtools? Press Y to proceed or N to cancel." yn
     case $yn in
         [Yy]* ) source /home/$USER/samtools.sh; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer Y or N.";;
     esac
 done
-

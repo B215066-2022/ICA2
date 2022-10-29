@@ -2,7 +2,7 @@
 
 pwd
 mkdir ICA1
-chmod -R 777 ~/home/$USER/ICA1
+chmod -R 777 ICA1
 cd ICA1
 
 git init # Initialising git
@@ -19,7 +19,7 @@ ls
 # Let's make a new directory ICA1/Mapping so that all our read sequences can be grouped together to map with the reference genome
 cd ..
 mkdir Mapping
-chmod -R 777 ~/home/$USER/ICA1/Mapping
+chmod -R 777 Mapping
 
 # unzip -o *.zip | gunzip -c *.fq.gz | awk '{if(NR%4==1) {printf(">%s\n",substr($0,2));} else if(NR%4==2) print;}' > /home/$USER/ICA1/Mapping/*.fasta
 # mv *.zip /home/$USER/ICA1/Mapping

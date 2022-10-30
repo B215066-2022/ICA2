@@ -43,6 +43,7 @@ cd ..
 cd Mapping
 ls
 
+# Prompt Y/N dialogue before proceeding
 while true; do
     read -p "Proceed to aligning our read sequences with Bowtie2? Press Y to proceed or N to cancel." yn
     case $yn in

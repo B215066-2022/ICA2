@@ -24,29 +24,22 @@ ls
 bowtie2-build Tco-genome.fasta.gz Tco-genome.btindex
 ls
 
-# Well that works! Let's perform a run-dry
+# Well that works! Let's perform a dry-run
 # for i in $(ls /home/$USER/ICA1/Mapping/*1.fq.gz); 
 # do 
 # 	echo "bowtie2 -p 4 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz/_2.fq.gz}Aligned.sam";
 # done 
 # This will show the paths to our pair sequence files, the corresponding SAM files
 # Hooray, that works! Let's do this
+
+# Convert every pair of RNAseq into a single sam file
 for i in $(ls /home/$USER/ICA1/Mapping/*1.fq.gz); 
 do 
  	bowtie2 --threads 48 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz}.sam;
 done | sed ':a;N;$!ba;s/\n/ /g'
 ls
 
-# This should get rid of all the annoying .fq.gz.bam names
-# for j in *.sam;
-# do 
-#	basename $j.sam;
-# done | sed ':a;N;$!ba;s/\n/ /g'
-# ls
-
-rm -f *.fq.gz # Remove all fq gz-compressed files
-ls
-
+# Prompt Y/N dialogue before proceeding
 while true; do
     read -p "Proceed to sorting our sequences with samtools? Press Y to proceed or N to cancel." yn
     case $yn in
@@ -55,3 +48,4 @@ while true; do
         * ) echo "Please answer Y or N.";;
     esac
 done
+

@@ -4,7 +4,6 @@
 pwd
 
 # Import raw T. congolense genome sequence (reference data) from the BPSM directory to the ICA1 directory
-chmod -R 777 ICA1 # change permission first, otherwise there would be an issue later when we try to import files into this directory
 cp -r /localdisk/data/BPSM/ICA1/Tcongo_genome/ /home/$USER/ICA1/Mapping
 cd Tcongo_genome
 ls
@@ -15,7 +14,6 @@ cp TriTrypDB-46_TcongolenseIL3000_2019_Genome.fasta.gz /home/$USER/ICA1/Mapping 
 
 # Let's look into our Mapping directory now
 cd ..
-ls
 # Let's rename this complicated file name
 mv TriTrypDB-46_TcongolenseIL3000_2019_Genome.fasta.gz Tco-genome.fasta.gz # File name is too long. Let's shorten it, shall we?
 ls
@@ -32,7 +30,7 @@ ls
 # This will show the paths to our pair sequence files, the corresponding SAM files
 # Hooray, that works! Let's do this
 
-# Convert every pair of RNAseq into a single sam file
+# Convert every pair of RNAseq for example Tco-5590_1.fq.gz and Tco-5590_2.fq.gz into a single sam file Tco-5590.sam
 for i in $(ls /home/$USER/ICA1/Mapping/*1.fq.gz); 
 do 
  	bowtie2 --threads 48 -x Tco-genome.btindex -1 $i -2 ${i/_1.fq.gz/_2.fq.gz} -S ${i/_1.fq.gz}.sam;

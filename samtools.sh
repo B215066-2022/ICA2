@@ -9,7 +9,7 @@ done | sed ':a;N;$!ba;s/\n/ /g'
 rm -f *.fq.gz # Remove all fq gz-compressed files
 ls
 
-# Index our bam files
+# Index our bam files, so that they can be used afterwards using bedtools
 ls *.bam | parallel samtools index '{}'
 
 # Prompt Y/N dialogue before proceeding

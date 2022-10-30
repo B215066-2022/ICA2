@@ -53,4 +53,3 @@ while true; do
     esac
 done
 
-# This is probably the final version of main.sh before merging

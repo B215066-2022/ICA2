@@ -6,6 +6,7 @@ import os, sys, subprocess, shutil
 # export NCBI_API_KEY=54b38a82050346352dbaf27e8e02a65f0408" >> ~/.bash_profile
 # echo ${NCBI_API_KEY}
 
+# Make a working directory first, and let's call it ICA2
 os.mkdir("ICA2")
 
 # Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein entries across all mosquitoes species under the taxonomic group Culicidae (TaxonID 7157)
@@ -32,15 +33,27 @@ print(TempFileC)
 # Fetch the protein sequence in fasta based on the user-input Accession#
 Seq = input('Select the accession number for the protein sequence to align against the rest of the sequences: ')
 print(f"You selected the protein sequence {Seq}")
-subprocess.call("esearch -db protein -query \"Seq[Accession]\" | efetch -format fasta > ICA2/Seq.fasta",shell=True)
-TempFileD = open("ICA2/EAA12459.4.fasta").read().upper()
+subprocess.call(f"esearch -db protein -query \"{Seq}[Accession]\" | efetch -format fasta > ICA2/{Seq}.fasta",shell=True)
+TempFileD = open(f"ICA2/{Seq}.fasta").read().upper()
 len(TempFileD)
 print(TempFileD)
 
+# Create a Blast database for the protein sequences we will align later
+# Indexing our database will make our alignment work so much faster
 subprocess.call("makeblastdb -in \"ICA2/T6PSynthase.fasta\" -title \"T6PSynthase\" -dbtype prot -out ICA2/T6PSynthase",shell=True)
-subprocess.call("blastp -query \"ICA2/EAA12459.4.fasta\" -db \"ICA2/T6PSynthase\" -out \"ICA2/T6PSynthaseAlignment.txt\" -outfmt 7",shell=True)
-TempFileE = open("ICA2/T6PSynthaseAlignment.txt").read().upper()
+
+# Align the user-input protein sequence with all the other protein sequences using Blastp
+# Print the blast alignment output in text
+subprocess.call(f"blastp -query \"ICA2/{Seq}.fasta\" -db \"ICA2/T6PSynthase\" -out \"ICA2/T6PSynthaseBAlignment.txt\" -outfmt 7",shell=True)
+TempFileE = open("ICA2/T6PSynthaseBAlignment.txt").read().upper()
 print(TempFileE)
+
+# Align the user-input protein sequence with all the other protein sequences using Clustalo
+# Print the Clustalo alignment output in fasta
+subprocess.call("clustalo -i \"ICA2/T6PSynthase.fasta\" -o \"ICA2/T6PSynthaseCAlignment.fasta\" --auto -v",shell=True)
+TempFileF = open("ICA2/T6PSynthaseCAlignment.fasta").read().upper()
+print(TempFileF)
+
 
 
 # OptionA = ['yes', 'y']

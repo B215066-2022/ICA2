@@ -9,28 +9,28 @@ import os, sys, subprocess, shutil
 # Make a working directory first, and let's call it ICA2
 os.mkdir("ICA2")
 
-# Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein entries across all mosquitoes species under the taxonomic group Culicidae (TaxonID 7157)
+# Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein sequences across all mosquitoes species under the taxonomic group Culicidae (TaxonID 7157)
 subprocess.call("esearch -db protein -query \"txid7157[Organism:exp] AND Trehalose-6-Phosphate Synthase\"",shell=True)
 
-# Search against the NCBI database for all Trehalose-6-Phosphate Synthase UID# across all mosquitoes species under the taxonomic group Culicidae (TaxonID 7157) and fetch their UID#)
+# Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein sequences across all mosquitoes species under the taxonomic group Culicidae (TaxonID 7157) and fetch their UID#
 subprocess.call("esearch -db protein -query \"txid7157[Organism:exp] AND Trehalose-6-Phosphate Synthase\" | efetch -format uid > ICA2/T6PSynthase.gis",shell=True)
 TempFileA = open("ICA2/T6PSynthase.gis").read().upper()
 len(TempFileA)
 print(TempFileA)
 
-# Search against the NCBI database for all Trehalose-6-Phosphate Synthase Accession# across all mosquitoes species under the taxonomic group Culicidae (TaxonID 7157 and fetch their Accession#)
+# Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein sequences across all mosquito species under the taxonomic group Culicidae (TaxonID 7157) and fetch their Accession numbers
 subprocess.call("esearch -db protein -query \"txid7157[Organism:exp] AND Trehalose-6-Phosphate Synthase\" | efetch -format acc > ICA2/T6PSynthase.acc",shell=True)
 TempFileB = open("ICA2/T6PSynthase.acc").read().upper()
 len(TempFileB)
 print(TempFileB)
 
-# Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein entries across all mosquito species under the taxonomic group Culicidae (TaxonID 7157) and fetch their fasta sequences
+# Search against the NCBI database for all Trehalose-6-Phosphate Synthase protein sequences across all mosquito species under the taxonomic group Culicidae (TaxonID 7157) and fetch their Fasta sequences
 subprocess.call("esearch -db protein -query \"txid7157[Organism:exp] AND Trehalose-6-Phosphate Synthase\" | efetch -format fasta > ICA2/T6PSynthase.fasta",shell=True)
 TempFileC = open("ICA2/T6PSynthase.fasta").read().upper()
 len(TempFileC)
 print(TempFileC)
 
-# Fetch the protein sequence in fasta based on the user-input Accession#
+# Fetch the protein sequence in fasta based on the user-input Accession numbers
 Seq = input('Select the accession number for the protein sequence to align against the rest of the sequences: ')
 print(f"You selected the protein sequence {Seq}")
 subprocess.call(f"esearch -db protein -query \"{Seq}[Accession]\" | efetch -format fasta > ICA2/{Seq}.fasta",shell=True)

@@ -48,6 +48,8 @@ while True:
             
             print(f"------------------------------")
             print(f"We will now begin searching the NCBI database for protein entries of {QueryB} in the organism under the TaxonID {QueryA}.")
+            time.sleep(1)
+            print(f"Fetching protein entries...")
             time.sleep(3)
             # Search against the NCBI database for the user-input protein family across all species under the specified taxon group
             subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] and {QueryB}\" > \"ICA2/{QueryBr}.txt\" ",shell=True)
@@ -66,6 +68,8 @@ while True:
 
             print(f"------------------------------")
             print(f"We will now begin fetching all the entries in the form of UID for {QueryB} in the organism under the TaxonID {QueryA}.")
+            time.sleep(1)
+            print("Fetching UID entries...")
             time.sleep(3)
             # Search against the NCBI database for the user-input protein family across all species under the specified taxon group and fetch their UID#
             subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format uid > \"ICA2/{QueryBr}.gis\" ",shell=True)
@@ -78,17 +82,24 @@ while True:
 
             print(f"------------------------------")
             print(f"We will now begin fetching all the protein entries in the form of accession numbers for {QueryB} in the organism under the TaxonID {QueryA}.")
+            time.sleep(1)
+            print(f"Fetching accession numbers...")
             time.sleep(3)   
             # Search against the NCBI database for the user-input protein family across all species under the specified taxon group and fetch their Accession numbers
             subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format acc > \"ICA2/{QueryBr}.acc\" ",shell=True)
             TempFileB = open(f"ICA2/{QueryBr}.acc").read().upper()
             print(f"I will now list down all the accession numbers for {QueryB} in the organism under the TaxonID {QueryA}.")
+            time.sleep(1)
+            print("Listing down the accession numbers...")
+            time.sleep(1)
             print(TempFileB)
 
             
 
-            print(f"------------------------------")
-            print(f"We will now begin fetching all the protein sequences in FASTA.")
+            print("------------------------------")
+            print(f"We will now begin fetching all the protein sequences in FASTA for {QueryB} in the organism under the TaxonID {QueryA}.")
+            time.sleep(1)
+            print("Fetching FASTA protein sequences...")
             time.sleep(3)
             # Fetch all protein sequences in FASTA for all available accession entries
             subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format fasta > \"ICA2/{QueryBr}.fasta\" ",shell=True)
@@ -143,7 +154,7 @@ while True:
             print(f"------------------------------")
             print("Great, we have all the data we need for our protein analysis!")
             time.sleep(1)
-            print("But before going any further, we will need to create a database and index our protein sequences.")
+            print("But before that, we will need to create a database and index our protein sequences.")
             time.sleep(1)
             print(f"Indexing our {QueryB} protein sequences in the organisms under the TaxonID {QueryA}...")
             time.sleep(2)
@@ -184,21 +195,21 @@ while True:
                     print("Answer yes or no only.")
                     continue
 
-            print(f"Would you like to run mutiple sequence alignment with ClustalO now?")
+            print(f"Would you like to run mutiple sequence alignment (MSA) for all the protein sequences for {QueryD} in the organism  under the TaxonID {QueryA} with ClustalO now?")
             time.sleep(1)
             QueryG = input("Answer yes or no: ")
 
             while True:
                 if QueryG.lower() in OptionA:
                     time.sleep(1)
-                # Align the user-input protein sequence with all the other protein sequences using Clustalo
-                # Print the Clustalo alignment output in fasta
-                    print(f"Now, we will begin aligning {QueryD} against the other protein sequences with ClustalO.")
+                    # Align the user-input protein sequence with all the other protein sequences using Clustalo
+                    # Print the Clustalo alignment output in fasta
+                    print(f"We will begin running MSA with ClustalO.")
                     time.sleep(1)
-                    print(f"Running ClustalO alignment between {QueryD} and all the other {QueryB} protein sequences...")
+                    print(f"Running MSA with ClustalO on all {QueryB} protein sequences...")
                     time.sleep(3)
-                    subprocess.call(f"clustalo -i \"ICA2/{QueryBr}.fasta\" -o \"ICA2/{QueryBr}Aligned.fasta\" --auto -v",shell=True)
-                    TempFileF = open(f"ICA2/{QueryBr}Aligned.fasta").read().upper()
+                    subprocess.call(f"clustalo -i \"ICA2/{QueryBr}.fasta\" -o \"ICA2/{QueryBr}Aligned.msf\" --auto -v",shell=True)
+                    TempFileF = open(f"ICA2/{QueryBr}Aligned.msf").read().upper()
             
                     print(f"Would you like to view the result of our ClustalO alignment?")
                     time.sleep(1)
@@ -211,7 +222,7 @@ while True:
                             time.sleep(1)
                             print(TempFileF)
                             time.sleep(3)
-                            print(f"I have saved this ClustalO alignment output in <ICA2/{QueryD}Aligned.fasta>")
+                            print(f"I have saved this ClustalO alignment output in <ICA2/{QueryBr}Aligned.msf>")
                             break
                         elif QueryH.lower() in OptionB:
                             print("We can view the result of ClustalO alignment next time.")
@@ -226,9 +237,39 @@ while True:
                 else:
                     print("Answer yes or no only.")
                     continue
+        
+            print(f"Would you like to take your analysis a bit further and observe the conserved regions between all the protein sequences now for {QueryB}?")
+            time.sleep(1)
+            QueryI = input("Answer yes or no: ")
+        
+            while True:
+                        if QueryI.lower() in OptionA:
+                            time.sleep(1)
+                            print("We will begin plotting a graph showing the conserved regions between all the protein sequences.")
+                            time.sleep(1)
+                            print("Plotting conserved region graph....")
+                            time.sleep(3)
+                            # Search for conserved regions within all the aligned protein sequences using Plotcon
+                            subprocess.call(f"plotcon -sequences \"ICA2/{QueryBr}Aligned.msf\" -winsize 100 -graph png",shell=True)
+                            # Something is wrong here, the output plotcon.1.png is being saved in the home directory rather than the ICA2 directory.... Have to fix it soon!
+                            time.sleep(1)
+                            print(f"I have saved this graph output as <ICA2/{QueryBr}/plotcon.1.png>")
+                            import matplotlib.pyplot as plt
+                            import matplotlib.image as mpimg
+                            img = mpimg.imread(f'ICA2/plotcon.1.png')
+                            plt.imshow(img)
+                            plt.show()
+                            break
+                        elif QueryI.lower() in OptionB:
+                            print("We can analyse the protein conserved regions next time.")
+                            break
+                        else:
+                            print("Answer yes or no only.")
+                            continue
 
+            # Additional protein sequence analysis
+            # patmatmotifs ICA2/filesname.fasta
             break
-
         elif QueryX.lower() in OptionB:
             print("You can run this programme again when you are ready.")
             break

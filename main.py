@@ -18,6 +18,7 @@ if not os.path.exists("ICA2"):
 
 print("This programme will help you analyse protein sequences of your choice.")
 time.sleep(1)
+#input("How would you like to proceed")
 print("-----------------------------")
 print("First, I need you to specify the NCBI taxonomy ID for the organism where your protein may be found.")
 time.sleep(1)
@@ -266,7 +267,7 @@ while True:
             print("------------------------------")
             print(f"If you would like to take a step further, I can help you to perform further analysis using your selected protein sequence {Queryd}.")
             time.sleep(1)
-            QueryH = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n")
+            QueryH = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n4)Predict coiled-coil likelihood\n5)Predict protein secondary structure")
 
             while True:
                 if QueryH == '1': # For "Plot conserved regions" with EMBOSS plotcon
@@ -303,28 +304,23 @@ while True:
                     time.sleep(1)
                     print("You have selected to search sequence motifs.")
                     time.sleep(1)
-                    print(f"I will help you to search for motifs in the protein sequence {QueryD} against PROSITE database.")
+                    print(f"I will help you to search for interesting motifs in the protein sequence {QueryD} against the motifs available in PROSITE database.")
                     time.sleep(1)
                     print(f"Searching for motifs in the protein sequence {QueryD}...")
                     # There is no need to index the prosite database now
                     # print("Indexing PROSITE database...") # By indexing, we mean downloading the motifs file prosite.dat
                     # time.sleep(3)
                     # subprocess.call("wget -P \"ICA2\" \"ftp://ftp.expasy.org/databases/prosite/prosite.dat\" ",shell=True) # Download the file prosite.dat and save it in the ICA2 directory
-                    # time.sleep(1)
-                    # subprocess.call("prosextract ICA2")
-                    # print("PROSITE databased indexed!")
-                    # time.sleep(1)
-
                     # EMBOSS patmatmotifs
                     time.sleep(3)
-                    subprocess.call(f"patmatmotifs -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.gb\" ", shell=True) # Let's standardise the input file in Genbank (.gb) format
+                    subprocess.call(f"patmatmotifs -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
                     print
                     print("Motifs search complete!")
                     TempFileG = open(f"ICA2/{QueryBr}/{QueryD}Motifs.gb").read()
                     time.sleep(1)
                     print(f"These are the identified motifs in {QueryD}:")
                     time.sleep(1)
-                    print(TempFileF)
+                    print(TempFileG)
                     break
 
                 elif QueryH == '3': # For "Plot AA charge" with EMBOSS extractalign
@@ -351,7 +347,49 @@ while True:
                     print("I have saved this graph output as <ICA2/Charge1.png>")
                     time.sleep(3)
                     break
-                
+
+                elif QueryH == '4': # For "Predict coiled-coil likelihood" with EMBOSS pepcoil
+                    time.sleep(1)
+                    print("You have selected to predict coiled-coil likelihood.")
+                    time.sleep(1)
+                    print(f"I will help you to predict the coiled-coil likelihood by calculating the probability of a coiled-coil structure for the amino acids in the protein sequence {QueryD} and write the report in Genbank format.")
+                    time.sleep(1)
+                    print(f"Calculating the coiled-coil probability...")
+                    # EMBOSS pepcoil
+                    time.sleep(3)
+                    subprocess.call(f"pepcoil -sequence -sprotein1 -fformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_Coil.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
+                    print
+                    print("Calculation complete!")
+                    TempFileH = open(f"ICA2/{QueryBr}/{QueryD}_Coil.gb").read()
+                    time.sleep(1)
+                    print(f"Showing you the coiled-coil prediction report:")
+                    time.sleep(1)
+                    print(TempFileH)
+                    time.sleep(3)
+                    print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_Coil.gb>")
+                    break
+               
+                elif QueryI == '5': # For "Predict secondary structure" with EMBOSS garnier
+                    time.sleep(1)
+                    print("You have selected to predict secondary structure.")
+                    time.sleep(1)
+                    print(f"I will help you to predict the secondary structure for the protein sequence {QueryD} and write the report in Genbank format.")
+                    time.sleep(1)
+                    print("Predicting the secondary structure...")
+                    # EMBOSS garnier
+                    time.sleep(3)
+                    subprocess.call(f"garnier -sequence -sprotein1 -fformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
+                    print
+                    print("Prediction complete!")
+                    TempFileI = open(f"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb").read()
+                    time.sleep(1)
+                    print("Showing you the secondary structure prediction report:")
+                    time.sleep(1)
+                    print(TempFileI)
+                    time.sleep(3)
+                    print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb>")
+                    break
+
                 else:
                     print("Input your selection number 1-3")
                     continue

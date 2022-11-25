@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-import os
-import sys
-import shutil
+import os, sys, shutil
+import numpy as np
+import pandas as pd
 import re # Useful to help us locate a specific motif in our output files
 import subprocess # We will be running a lot of background functions that are non python-based
 import time # We will be putting some time gaps between each response or print statement
@@ -21,13 +21,13 @@ time.sleep(1)
 print("-----------------------------")
 print("First, I need you to specify the NCBI taxonomy ID for the organism where your protein may be found.")
 time.sleep(1)
-print("For example, 7157 or 4130.")
+print("For example: For the mosquito family Cullinicea, input the TaxonID 7157.")
 time.sleep(1)
 QueryA = input('Please input the taxononmy ID of your organism now: ')
 print("------------------------------")
 print("Now, I need you to specify the family of protein you are interested in.")
 time.sleep(1)
-print("For example, hydrolase or glucose-6-phosphate dehydrogenase.")
+print("For example: Hydrolase or glucose-6-phosphate dehydrogenase.")
 time.sleep(1)
 QueryB = input('Please input the name of your protein family now: ')
 # Programming language has a weird way of parsing user-input responses containing spaces into filenames in which the output names  will either be truncated or miss the intended file extensions
@@ -38,7 +38,7 @@ OptionA = ['yes','y']
 OptionB = ['no','n']
 while True:
         print(f"------------------------------")
-        print(f"You have specified the protein family {QueryB} in the organism under the TaxonID {QueryA}.")
+        print(f"You have specified the protein family {QueryB} across all organism species under the TaxonID {QueryA}.")
         time.sleep(1)
         print("Is this correct?")
         time.sleep(1)
@@ -48,8 +48,11 @@ while True:
             # Make a directory for the given protein family name so that we can store all analysis output files into the same directory
             if not os.path.exists(f"ICA2/{QueryBr}"):
                 os.mkdir(f"ICA2/{QueryBr}")
+            
+            # USE PANDAS 
+            # subprocess.call('wget -qO eukaryotes.txt "ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/eukaryotes.txt" ' , shell=True)
             print(f"------------------------------")
-            print(f"We will now begin searching the NCBI database for protein entries of {QueryB} in the organism under the TaxonID {QueryA}.")
+            print(f"We will now begin searching the NCBI database for protein entries of {QueryB} across all organism species under the TaxonID {QueryA}.")
             time.sleep(1)
             print(f"Fetching protein entries...")
             time.sleep(3)
@@ -69,7 +72,7 @@ while True:
             #        print("...")
 
             print("------------------------------")
-            print(f"We will now begin fetching all the entries in the form of UID for {QueryB} in the organism under the TaxonID {QueryA}.")
+            print(f"We will now begin fetching all the entries in the form of UID for {QueryB} across all organism species under the TaxonID {QueryA}.")
             time.sleep(1)
             print("Fetching UID entries (this may take a moment)...")
             time.sleep(3)
@@ -83,14 +86,14 @@ while True:
             # Must have a way of parsing an error message if no sequence count is found using re.findall
 
             print("------------------------------")
-            print(f"We will now begin fetching all the protein entries in the form of accession numbers for {QueryB} in the organism under the TaxonID {QueryA}.")
+            print(f"We will now begin fetching all the protein entries in the form of accession numbers for {QueryB} across all orgaism species under the TaxonID {QueryA}.")
             time.sleep(1)
             print("Fetching accession numbers (this may take a moment)...")
             time.sleep(3)   
             # Search against the NCBI database for the user-input protein family across all species under the specified taxon group and fetch their Accession numbers
             subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format acc > \"ICA2/{QueryBr}/{QueryBr}.acc\" ",shell=True)
             TempFileB = open(f"ICA2/{QueryBr}/{QueryBr}.acc").read().upper()
-            print(f"I will now list down all the accession numbers for {QueryB} in the organism under the TaxonID {QueryA}.")
+            print(f"I will now list down all the accession numbers for {QueryB} across all organism species under the TaxonID {QueryA}.")
             time.sleep(1)
             print("Listing down the accession numbers...")
             time.sleep(1)
@@ -263,12 +266,12 @@ while True:
             print("------------------------------")
             print(f"If you would like to take a step further, I can help you to perform further analysis using your selected protein sequence {Queryd}.")
             time.sleep(1)
-            QueryH = input("Select one analysis from the following:\n1) Plot conserved regions\n2) Search motifs\n3) Extract motifs")
+            QueryH = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n")
 
             while True:
                 if QueryH == '1': # For "Plot conserved regions" with EMBOSS plotcon
                     time.sleep(1)
-                    print("You have selected to plot conserved regions.")
+                    print("You have selected to plot a graph on amino acid conserved regions.")
                     time.sleep(1)
                     print(f"I will help you to identify all possible conserved regions between all the protein sequences for {QueryB} across all organism species under the TaxonID {QueryA} in the form of a graph.")
                     time.sleep(1)
@@ -302,23 +305,51 @@ while True:
                     time.sleep(1)
                     print(f"I will help you to search for motifs in the protein sequence {QueryD} against PROSITE database.")
                     time.sleep(1)
-                    print("Indexing PROSITE database...") # By indexing, we mean downloading the motifs file prosite.dat
-                    time.sleep(3)
-                    subprocess.call("wget -P \"ICA2\" \"ftp://ftp.expasy.org/databases/prosite/prosite.dat\" ",shell=True) # Download the file prosite.dat and save it in the ICA2 directory
-                    print("PROSITE databased indexed!")
-                    time.sleep(1)
-                    # EMBOSS patmatmotifs
                     print(f"Searching for motifs in the protein sequence {QueryD}...")
+                    # There is no need to index the prosite database now
+                    # print("Indexing PROSITE database...") # By indexing, we mean downloading the motifs file prosite.dat
+                    # time.sleep(3)
+                    # subprocess.call("wget -P \"ICA2\" \"ftp://ftp.expasy.org/databases/prosite/prosite.dat\" ",shell=True) # Download the file prosite.dat and save it in the ICA2 directory
+                    # time.sleep(1)
+                    # subprocess.call("prosextract ICA2")
+                    # print("PROSITE databased indexed!")
+                    # time.sleep(1)
+
+                    # EMBOSS patmatmotifs
                     time.sleep(3)
-                    subprocess.call(f"patmatmotifs -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile \"ICA2/{QueryBr}/{QueryD}.patmatmotifs\" ", shell=True) # Let's standardise the input file in Genbank (.gb) format
+                    subprocess.call(f"patmatmotifs -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.gb\" ", shell=True) # Let's standardise the input file in Genbank (.gb) format
                     print
-                    print("Motif search complete!")
+                    print("Motifs search complete!")
+                    TempFileG = open(f"ICA2/{QueryBr}/{QueryD}Motifs.gb").read()
                     time.sleep(1)
+                    print(f"These are the identified motifs in {QueryD}:")
+                    time.sleep(1)
+                    print(TempFileF)
                     break
 
-                elif QueryH == '3': # For "Extract motifs" with EMBOSS extractalign
+                elif QueryH == '3': # For "Plot AA charge" with EMBOSS extractalign
                     time.sleep(1)
-                    print("You have selected to extract motifs")
+                    print("You have selected to plot a graph on the amino acid charge.")
+                    time.sleep(1)
+                    print(f"I will help you to identify the mean charge for each amino acid in the protein sequence {QueryD} against EMBOSS database in the form of a graph.")
+                    time.sleep(1)
+                    print("Plotting the graph...")
+                    # EMBOSS charge
+                    time.sleep(3)
+                    subprocess.call("charge -plot \"ICA2/{QueryBr}/{queryD}.gb\" -winsize 100 =graph png ",shell=True)
+                    os.rename("charge.1.png","ICA2/Charge1.png")
+                    print("Plotting complete!")
+                    time.sleep(1)
+                    print("Showing you the graph output...")
+                    time.sleep(1)
+                    # Show the output graph in a pop-up window
+                    import matplotlib.pyplot as plt
+                    import matplotlib.image as mpimg
+                    img = mpimg.imread(f'ICA2/Charge1.png')
+                    plt.imshow(img)
+                    plt.show()
+                    print("I have saved this graph output as <ICA2/Charge1.png>")
+                    time.sleep(3)
                     break
                 
                 else:

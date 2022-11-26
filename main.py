@@ -294,20 +294,18 @@ while True:
             print(f"If you would like to take a step further, I can help you to perform further analysis using your selected protein sequence {QueryD}.")
             time.sleep(1)
 
-            # QueryI = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n4) Predict coiled-coil likelihood\n5) Predict protein secondary structure\n0) Start again\n99) Do nothing\nInput your selection: ")
-            
             while True:
-                QueryI = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n4) Predict coiled-coil likelihood\n5) Predict protein secondary structure\n0) Start again\n99) Do nothing\nInput your selection: ")
-                if QueryI == '1': # For "Plot conserved regions" with EMBOSS plotcon
+                QueryI = (input("Select one protein analysis from the following:\n1) Plot conserved regions in AA residues\n2) Search motifs in AA residues\n3) Determine charges in AA residues\n4) Predict coiled-coil likelihood\n5) Predict protein secondary structure\n0) Start over\n99) Do nothing\nInput your selection: "))
+                if QueryI == '1': # For "Plot conserved regions in AA residues" with EMBOSS plotcon
                         time.sleep(1)
-                        print("You have selected to plot a graph on amino acid conserved regions.")
+                        print("You have selected to plot a graph of conserved regions in amino acid residues.")
                         time.sleep(1)
-                        print(f"I will help you to identify all possible conserved regions between all the protein sequences for {QueryB} across all organism species under the TaxonID {QueryA} in the form of a graph.")
+                        print(f"I will help you to identify the conserved amino acid residues between all the protein sequences for {QueryB} across all organism species under the TaxonID {QueryA} report the output in a graph.")
                         time.sleep(1)
                         print("Plotting the graph....")
                         time.sleep(3)
                         # EMBOSS plotcon
-                        subprocess.call(f"plotcon -sequences \"ICA2/{QueryBr}/{QueryBr}_Aligned.msf\" -winsize 5 -graph png -gdirectory \"ICA2/{QueryBr}\" -scorefile EBLOSUM62 ",shell=True)
+                        subprocess.call(f"plotcon -sequences \"ICA2/{QueryBr}/{QueryBr}_Aligned.msf\" -winsize 40 -graph png -goutfile \"{QueryBr}_Plotcon\" -gdirectory \"ICA2/{QueryBr}\" -scorefile EBLOSUM62 ",shell=True) # Take msf alignment file for plotcon and generate graph output in png format (default)
                         print("Plotting complete!")
                         time.sleep(1)
                         print("Showing you the graph output...")
@@ -315,14 +313,15 @@ while True:
                         # Show the output graph in a pop-up window
                         import matplotlib.pyplot as plt
                         import matplotlib.image as mpimg
-                        TempGraph0 = mpimg.imread(f'ICA2/{QueryBr}/plotcon.1.png')
+                        TempGraph0 = mpimg.imread(f'ICA2/{QueryBr}/{QueryBr}_Plotcon.1.png') # By default, plotcon will add number 1 in the output file name so we have to specify it for path finding
                         plt.imshow(TempGraph0)
                         plt.show()
-                        print(f"I have saved this graph output as <ICA2/{QueryBr}/plotcon.1.png>")
+                        print(f"I have saved this graph output as <ICA2/{QueryBr}/{QueryBr}_Plotcon.1.png>")
                         time.sleep(3)
+                        print("------------------------------")
                         continue
 
-                elif QueryI == '2': # For "Search motifs" with EMBOSS patmatmotifs
+                elif QueryI == '2': # For "Search motifs in AA residues" with EMBOSS patmatmotifs
                         time.sleep(1)
                         print("You have selected to search sequence motifs.")
                         time.sleep(1)
@@ -331,25 +330,30 @@ while True:
                         print(f"Searching for motifs in the protein sequence {QueryD}...")
                         time.sleep(3)
                         # EMBOSS patmatmotifs
-                        subprocess.call(f"patmatmotifs -full -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.dbmotif\" ",shell=True) # USe input file as gb format and output file as the default dbmotif
+                        subprocess.call(f"patmatmotifs -full -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.dbmotif\" ",shell=True) # Use input {QueryD} protein in gb format and generate output file in default dbmotif format
                         print("Motifs search complete!")
                         TempFileG = open(f"ICA2/{QueryBr}/{QueryD}_Motifs.dbmotif").read()
                         time.sleep(1)
-                        print(f"These are the identified motifs in {QueryD}:")
+                        print("Showing you the motifs output...")
                         time.sleep(1)
                         print(TempFileG)
+                        time.sleep(3)
+                        print(f"I have saved this output as <ICA2/{QueryBr}/{QueryD}_Motifs.dbmotif>")
+                        time.sleep(1)
+                        print("------------------------------")
                         continue
 
-                elif QueryI == '3': # For "Plot AA charge" with EMBOSS extractalign
+                elif QueryI == '3': # For "Determine charges for AA residues" with EMBOSS extractalign
                         time.sleep(1)
-                        print("You have selected to plot a graph on the amino acid charge.")
+                        print("You have selected to determine the charges for AA residues.")
                         time.sleep(1)
-                        print(f"I will help you to determine the charge for each amino acid in the protein sequence {QueryD} against EMBOSS database in the form of a graph.")
+                        print(f"I will help you to determine the charge for every 15 amino acid residues in the protein sequence {QueryD} and report the output in a graph.")
                         time.sleep(1)
+                        print("Determining amino acid charges...")
                         print("Plotting the graph...")
                         time.sleep(3)
-                        # EMBOSS charge for raw data
-                        subprocess.call(f"charge -sprotein -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -gdirectory \"ICA2/{QueryBr}\" ",shell=True)
+                        # EMBOSS charge
+                        subprocess.call(f"charge -sprotein -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -goutfile \"{QueryD}_Charge\" -gdirectory \"ICA2/{QueryBr}\" ",shell=True) # Take input {QueryD} protein in gb format and generate output file in default charge format
                         print("Plotting complete!")
                         time.sleep(1)
                         print("Showing you the graph output...")
@@ -357,33 +361,37 @@ while True:
                         # Show the output graph in a pop-up window
                         import matplotlib.pyplot as plt
                         import matplotlib.image as mpimg
-                        TempGraph1 = mpimg.imread(f'ICA2/{QueryBr}/charge.1.png')
+                        TempGraph1 = mpimg.imread(f'ICA2/{QueryBr}/{QueryD}_Charge.1.png') # By default, charge will add number 1 in the output file name so we have to specify it for path finding
                         plt.imshow(TempGraph1)
                         plt.show()
-                        print(f"I have saved this graph output as <ICA2/{QueryBr}/charge.1.png>")
-                        print(f"And a copy of the raw data as <ICA2/{QueryBr}/{QueryD}_Charge.charge>")
                         time.sleep(3)
+                        print(f"I have saved this graph output as <ICA2/{QueryBr}/{QueryD}_Charge.1.png>")
+                        print(f"And a copy of the raw data as <ICA2/{QueryBr}/{QueryD}_Charge.charge>")
+                        time.sleep(1)
+                        print("------------------------------")
                         continue
 
                 elif QueryI == '4': # For "Predict coiled-coil likelihood" with EMBOSS pepcoil
                         time.sleep(1)
                         print("You have selected to predict coiled-coil likelihood.")
                         time.sleep(1)
-                        print(f"I will help you to predict the coiled-coil likelihood by calculating the probability of a coiled-coil structure for the amino acids in the protein sequence {QueryD} and write the report in Genbank format.")
+                        print(f"I will help you to predict the coiled-coil likelihood by calculating the probability of a coiled-coil structure for the amino acid residues in the protein sequence {QueryD}.")
                         time.sleep(1)
-                        print(f"Calculating the coiled-coil probability...")
+                        print(f"Calculating the coiled-coil probability for every 15 residues...")
                         time.sleep(3)
                         # EMBOSS pepcoil
-                        subprocess.call(f"pepcoil -sequence -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_Coil.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
+                        subprocess.call(f"pepcoil -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -window 15 -outfile \"ICA2/{QueryBr}/{QueryD}_Coil.pepcoil\" ",shell=True) # Take input {QueryD} protein in gb format and generate output in default pepcoil format
                         print
                         print("Calculation complete!")
-                        TempFileH = open(f"ICA2/{QueryBr}/{QueryD}_Coil.gb").read()
+                        TempFileH = open(f"ICA2/{QueryBr}/{QueryD}_Coil.pepcoil").read()
                         time.sleep(1)
-                        print(f"Showing you the coiled-coil prediction report:")
+                        print(f"Showing you the coiled-coil prediction output:")
                         time.sleep(1)
                         print(TempFileH)
                         time.sleep(3)
-                        print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_Coil.gb>")
+                        print(f"I have saved a copy of this output as <ICA2/{QueryBr}/{QueryD}_Coil.pepcoil>")
+                        time.sleep(1)
+                        print("------------------------------")
                         continue
 
                 elif QueryI == '5': # For "Predict secondary structure" with EMBOSS garnier
@@ -395,24 +403,27 @@ while True:
                         print("Predicting the secondary structure...")
                         time.sleep(3)
                         # EMBOSS garnier
-                        subprocess.call(f"garnier -sequence -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
+                        subprocess.call(f"garnier -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"{QueryD}_PredictedStructure.tagseq\" -rdirectory2 \"ICA2/{QueryBr}\" ", shell=True) # Take input {QueryD} protein in gb format and generate output in default tagseq format
                         print
                         print("Prediction complete!")
-                        TempFileI = open(f"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb").read()
+                        TempFileI = open(f"ICA2/{QueryBr}/{QueryD}_PredictedStructure.tagseq").read()
                         time.sleep(1)
-                        print("Showing you the secondary structure prediction report:")
+                        print("Showing you the secondary structure prediction output:")
                         time.sleep(1)
                         print(TempFileI)
                         time.sleep(3)
-                        print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb>")
+                        print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_PredictedStructure.tagseq>")
+                        time.sleep(1)
+                        print("------------------------------")
                         continue
                         
-                elif QueryI == '0': # For "Start again"
+                elif QueryI == 0: # For "Start all over again"
                         print("I am still working on looping back the script to call the first function. But for now, I am afraid you will need to run this script again.")
-                        
-                elif QueryI == '99': # For "Do nothing"
-                        print("Okay, will not do any further analysis for now...")
+                        break
 
+                elif QueryI == '99': # For "Do nothing"
+                        print("Okay, we will not do any further analysis for now...")
+                        break
                 else:
                         print("Input your selection number from 0 to 9 or 99!")
                         continue
@@ -423,7 +434,8 @@ while True:
 
         elif QueryX.lower() in OptionB:
             print("You can run this programme again when you are ready.")
-            continue
+            break
+        
         else:
             print("Answer yes or no only.")
             continue

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import re # Useful to help us locate a specific motif in our output files
 import subprocess # We will be running a lot of background functions that are non python-based
-import time # We will be putting some time gaps between each response or print statement
+import time # We will be putting some time gaps between each response/print statement
 
 # export "NCBI_API_KEY=54b38a82050346352dbaf27e8e02a65f0408" >> ~/.bashrc
 # export "NCBI_API_KEY=54b38a82050346352dbaf27e8e02a65f0408" >> ~/.bash_profile
@@ -14,31 +14,57 @@ import time # We will be putting some time gaps between each response or print s
 if not os.path.exists("ICA2"):
     os.mkdir("ICA2")
 
-# We need a prompt-dialogue here to ask whether the user wants to input an organism name or TaxonID.
-
-print("This programme will help you analyse protein sequences of your choice.")
-time.sleep(1)
-#input("How would you like to proceed")
 print("-----------------------------")
-print("First, I need you to specify the NCBI taxonomy ID for the organism where your protein may be found.")
+print("This programme will help you analyse protein sequences in the organism of your choice.")
 time.sleep(1)
-print("For example: For the mosquito family Cullinicea, input the TaxonID 7157.")
+print("If you know the NCBI Taxonomy ID for the organism you are interested in, you can specify it or search through the NCBI database for the ID.")
 time.sleep(1)
-QueryA = input('Please input the taxononmy ID of your organism now: ')
-print("------------------------------")
-print("Now, I need you to specify the family of protein you are interested in.")
-time.sleep(1)
-print("For example: Hydrolase or glucose-6-phosphate dehydrogenase.")
-time.sleep(1)
-QueryB = input('Please input the name of your protein family now: ')
+# print("How would you like to proceed?")
+# Let's do a prompt-dialogue here so that we can loop the script back here if the user needs to change their organism of choice
+# Query1 = input("a)I know the TaxonID b) Search through the NCBI database for the TaxonID")
+#    elif Query1 == 'a':
+#        break
+#    elif query1 == 'b':
+#        break
+#    else:
+#        continue
+
+# print("-----------------------------")
+# print("I need you to specify the TaxonID for the organism where your protein may be found.")
+# time.sleep(1)
+# print("For example: For the mosquito family Cullinicea, input the TaxonID 7157.")
+# time.sleep(1)
+# QueryA = input('Please input the taxononmy ID of your organism now: ')
+# print("------------------------------")
+# print("Now, I need you to specify the family of protein you are interested in.")
+# time.sleep(1)
+# print("For example: Hydrolase or glucose-6-phosphate dehydrogenase.")
+# time.sleep(1)
+# QueryB = input('Please input the name of your protein family now: ')
 # Programming language has a weird way of parsing user-input responses containing spaces into filenames in which the output names  will either be truncated or miss the intended file extensions
 # Replacing these spaces into underscores should fix the problem
-QueryBr = QueryB.replace(' ','_')
+# QueryBr = QueryB.replace(' ','_')
 
 OptionA = ['yes','y']
 OptionB = ['no','n']
+
 while True:
-        print(f"------------------------------")
+        print("-----------------------------")
+        print("I need you to specify the TaxonID for the organism where your protein may be found.")
+        time.sleep(1)
+        print("For example: For the mosquito family Cullinicea, input the TaxonID 7157.")
+        time.sleep(1)    
+        QueryA = input('Please input the taxononmy ID of your organism now: ')
+        print("------------------------------")
+        print("Now, I need you to specify the family of protein you are interested in.")
+        time.sleep(1)
+        print("For example: Hydrolase or trehalose-6-phosphate synthase.")
+        time.sleep(1)
+        QueryB = input('Please input the name of your protein family now: ')
+        # Programming language has a weird way of parsing user-input responses containing spaces into filenames in which the output names  will either be truncated or miss the intended file extensions
+        # Replacing these spaces into underscores should fix the problem
+        QueryBr = QueryB.replace(' ','_')
+        print("------------------------------")
         print(f"You have specified the protein family {QueryB} across all organism species under the TaxonID {QueryA}.")
         time.sleep(1)
         print("Is this correct?")
@@ -231,9 +257,9 @@ while True:
                     time.sleep(1)
                     print(f"Running MSA with ClustalO on all {QueryB} protein sequences...")
                     time.sleep(3)
-                    subprocess.call(f"clustalo -i \"ICA2/{QueryBr}/{QueryBr}.fasta\" -o \"ICA2/{QueryBr}/{QueryBr}Aligned.msf\" --auto -v",shell=True)
+                    subprocess.call(f"clustalo -i \"ICA2/{QueryBr}/{QueryBr}.fasta\" -o \"ICA2/{QueryBr}/{QueryBr}_Aligned.msf\" --auto -v",shell=True)
                     print("ClustalO alignment complete!")
-                    TempFileF = open(f"ICA2/{QueryBr}/{QueryBr}Aligned.msf").read().upper()
+                    TempFileF = open(f"ICA2/{QueryBr}/{QueryBr}_Aligned.msf").read().upper()
                     time.sleep(1)
                     print(f"Would you like to view the result of our ClustalO alignment?")
                     time.sleep(1)
@@ -246,7 +272,7 @@ while True:
                             time.sleep(1)
                             print(TempFileF)
                             time.sleep(3)
-                            print(f"I have saved this ClustalO alignment output as <ICA2/{QueryBr}/{QueryBr}Aligned.msf>")
+                            print(f"I have saved this ClustalO alignment output as <ICA2/{QueryBr}/{QueryBr}_Aligned.msf>")
                             time.sleep(1)
                             break
                         elif QueryH.lower() in OptionB:
@@ -265,139 +291,139 @@ while True:
             
             # We should make this run in a separate python shell later
             print("------------------------------")
-            print(f"If you would like to take a step further, I can help you to perform further analysis using your selected protein sequence {Queryd}.")
+            print(f"If you would like to take a step further, I can help you to perform further analysis using your selected protein sequence {QueryD}.")
             time.sleep(1)
-            QueryH = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n4)Predict coiled-coil likelihood\n5)Predict protein secondary structure")
 
+            # QueryI = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n4) Predict coiled-coil likelihood\n5) Predict protein secondary structure\n0) Start again\n99) Do nothing\nInput your selection: ")
+            
             while True:
-                if QueryH == '1': # For "Plot conserved regions" with EMBOSS plotcon
-                    time.sleep(1)
-                    print("You have selected to plot a graph on amino acid conserved regions.")
-                    time.sleep(1)
-                    print(f"I will help you to identify all possible conserved regions between all the protein sequences for {QueryB} across all organism species under the TaxonID {QueryA} in the form of a graph.")
-                    time.sleep(1)
-                    print("Plotting the graph....")
-                    time.sleep(3)
-                    # EMBOSS plotcon
-                    subprocess.call(f"plotcon -sequences \"ICA2/{QueryBr}/{QueryBr}Aligned.msf\" -winsize 100 -graph png ",shell=True)
-                    # Something is wrong here:
-                    # The graph output plotcon.1.png is being saved in the home directory rather than the ICA2 directory 
-                    # Quick fix is to move the plotcon.1.png file to the directory we want
-                    os.rename("plotcon.1.png","ICA2/PlotCon1.png") 
-                    # But the problem with this is that the second time we run plotcon, it will generate another plotcon.1.png in the home directory and we won't be able to move it the the same directory we want as a separate file because it has the same name as the one we moved earlier!
-                    # Unless, if we have a way of making the programme know that we run a second plotcon and make the output file saved as plotcon2.png. Hmmm but how do we do that?
-                    print("Plotting complete!")
-                    time.sleep(1)
-                    print("Showing you the graph output...")
-                    time.sleep(1)
-                    # Show the output graph in a pop-up window
-                    import matplotlib.pyplot as plt
-                    import matplotlib.image as mpimg
-                    img = mpimg.imread(f'ICA2/PlotCon1.png')
-                    plt.imshow(img)
-                    plt.show()
-                    print("I have saved this graph output as <ICA2/PlotCon1.png>")
-                    time.sleep(3)
-                    break
+                QueryI = input("Select one protein analysis from the following:\n1) Plot AA conserved regions\n2) Search AA motifs\n3) Plot AA charge\n4) Predict coiled-coil likelihood\n5) Predict protein secondary structure\n0) Start again\n99) Do nothing\nInput your selection: ")
+                if QueryI == '1': # For "Plot conserved regions" with EMBOSS plotcon
+                        time.sleep(1)
+                        print("You have selected to plot a graph on amino acid conserved regions.")
+                        time.sleep(1)
+                        print(f"I will help you to identify all possible conserved regions between all the protein sequences for {QueryB} across all organism species under the TaxonID {QueryA} in the form of a graph.")
+                        time.sleep(1)
+                        print("Plotting the graph....")
+                        time.sleep(3)
+                        # EMBOSS plotcon
+                        subprocess.call(f"plotcon -sequences \"ICA2/{QueryBr}/{QueryBr}_Aligned.msf\" -winsize 5 -graph png -gdirectory \"ICA2/{QueryBr}\" -scorefile EBLOSUM62 ",shell=True)
+                        print("Plotting complete!")
+                        time.sleep(1)
+                        print("Showing you the graph output...")
+                        time.sleep(1)
+                        # Show the output graph in a pop-up window
+                        import matplotlib.pyplot as plt
+                        import matplotlib.image as mpimg
+                        TempGraph0 = mpimg.imread(f'ICA2/{QueryBr}/plotcon.1.png')
+                        plt.imshow(TempGraph0)
+                        plt.show()
+                        print(f"I have saved this graph output as <ICA2/{QueryBr}/plotcon.1.png>")
+                        time.sleep(3)
+                        continue
 
-                elif QueryH == '2': # For "Search motifs" with EMBOSS patmatmotifs
-                    time.sleep(1)
-                    print("You have selected to search sequence motifs.")
-                    time.sleep(1)
-                    print(f"I will help you to search for interesting motifs in the protein sequence {QueryD} against the motifs available in PROSITE database.")
-                    time.sleep(1)
-                    print(f"Searching for motifs in the protein sequence {QueryD}...")
-                    # There is no need to index the prosite database now
-                    # print("Indexing PROSITE database...") # By indexing, we mean downloading the motifs file prosite.dat
-                    # time.sleep(3)
-                    # subprocess.call("wget -P \"ICA2\" \"ftp://ftp.expasy.org/databases/prosite/prosite.dat\" ",shell=True) # Download the file prosite.dat and save it in the ICA2 directory
-                    # EMBOSS patmatmotifs
-                    time.sleep(3)
-                    subprocess.call(f"patmatmotifs -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
-                    print
-                    print("Motifs search complete!")
-                    TempFileG = open(f"ICA2/{QueryBr}/{QueryD}Motifs.gb").read()
-                    time.sleep(1)
-                    print(f"These are the identified motifs in {QueryD}:")
-                    time.sleep(1)
-                    print(TempFileG)
-                    break
+                elif QueryI == '2': # For "Search motifs" with EMBOSS patmatmotifs
+                        time.sleep(1)
+                        print("You have selected to search sequence motifs.")
+                        time.sleep(1)
+                        print(f"I will help you to search for interesting motifs in the protein sequence {QueryD} against the motifs available in PROSITE database.")
+                        time.sleep(1)
+                        print(f"Searching for motifs in the protein sequence {QueryD}...")
+                        time.sleep(3)
+                        # EMBOSS patmatmotifs
+                        subprocess.call(f"patmatmotifs -full -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Motifs.dbmotif\" ",shell=True) # USe input file as gb format and output file as the default dbmotif
+                        print("Motifs search complete!")
+                        TempFileG = open(f"ICA2/{QueryBr}/{QueryD}_Motifs.dbmotif").read()
+                        time.sleep(1)
+                        print(f"These are the identified motifs in {QueryD}:")
+                        time.sleep(1)
+                        print(TempFileG)
+                        continue
 
-                elif QueryH == '3': # For "Plot AA charge" with EMBOSS extractalign
-                    time.sleep(1)
-                    print("You have selected to plot a graph on the amino acid charge.")
-                    time.sleep(1)
-                    print(f"I will help you to identify the mean charge for each amino acid in the protein sequence {QueryD} against EMBOSS database in the form of a graph.")
-                    time.sleep(1)
-                    print("Plotting the graph...")
-                    # EMBOSS charge
-                    time.sleep(3)
-                    subprocess.call("charge -plot \"ICA2/{QueryBr}/{queryD}.gb\" -winsize 100 =graph png ",shell=True)
-                    os.rename("charge.1.png","ICA2/Charge1.png")
-                    print("Plotting complete!")
-                    time.sleep(1)
-                    print("Showing you the graph output...")
-                    time.sleep(1)
-                    # Show the output graph in a pop-up window
-                    import matplotlib.pyplot as plt
-                    import matplotlib.image as mpimg
-                    img = mpimg.imread(f'ICA2/Charge1.png')
-                    plt.imshow(img)
-                    plt.show()
-                    print("I have saved this graph output as <ICA2/Charge1.png>")
-                    time.sleep(3)
-                    break
+                elif QueryI == '3': # For "Plot AA charge" with EMBOSS extractalign
+                        time.sleep(1)
+                        print("You have selected to plot a graph on the amino acid charge.")
+                        time.sleep(1)
+                        print(f"I will help you to determine the charge for each amino acid in the protein sequence {QueryD} against EMBOSS database in the form of a graph.")
+                        time.sleep(1)
+                        print("Plotting the graph...")
+                        time.sleep(3)
+                        # EMBOSS charge for raw data
+                        subprocess.call(f"charge -sprotein -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -gdirectory \"ICA2/{QueryBr}\" ",shell=True)
+                        print("Plotting complete!")
+                        time.sleep(1)
+                        print("Showing you the graph output...")
+                        time.sleep(1)
+                        # Show the output graph in a pop-up window
+                        import matplotlib.pyplot as plt
+                        import matplotlib.image as mpimg
+                        TempGraph1 = mpimg.imread(f'ICA2/{QueryBr}/charge.1.png')
+                        plt.imshow(TempGraph1)
+                        plt.show()
+                        print(f"I have saved this graph output as <ICA2/{QueryBr}/charge.1.png>")
+                        print(f"And a copy of the raw data as <ICA2/{QueryBr}/{QueryD}_Charge.charge>")
+                        time.sleep(3)
+                        continue
 
-                elif QueryH == '4': # For "Predict coiled-coil likelihood" with EMBOSS pepcoil
-                    time.sleep(1)
-                    print("You have selected to predict coiled-coil likelihood.")
-                    time.sleep(1)
-                    print(f"I will help you to predict the coiled-coil likelihood by calculating the probability of a coiled-coil structure for the amino acids in the protein sequence {QueryD} and write the report in Genbank format.")
-                    time.sleep(1)
-                    print(f"Calculating the coiled-coil probability...")
-                    # EMBOSS pepcoil
-                    time.sleep(3)
-                    subprocess.call(f"pepcoil -sequence -sprotein1 -fformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_Coil.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
-                    print
-                    print("Calculation complete!")
-                    TempFileH = open(f"ICA2/{QueryBr}/{QueryD}_Coil.gb").read()
-                    time.sleep(1)
-                    print(f"Showing you the coiled-coil prediction report:")
-                    time.sleep(1)
-                    print(TempFileH)
-                    time.sleep(3)
-                    print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_Coil.gb>")
-                    break
-               
+                elif QueryI == '4': # For "Predict coiled-coil likelihood" with EMBOSS pepcoil
+                        time.sleep(1)
+                        print("You have selected to predict coiled-coil likelihood.")
+                        time.sleep(1)
+                        print(f"I will help you to predict the coiled-coil likelihood by calculating the probability of a coiled-coil structure for the amino acids in the protein sequence {QueryD} and write the report in Genbank format.")
+                        time.sleep(1)
+                        print(f"Calculating the coiled-coil probability...")
+                        time.sleep(3)
+                        # EMBOSS pepcoil
+                        subprocess.call(f"pepcoil -sequence -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_Coil.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
+                        print
+                        print("Calculation complete!")
+                        TempFileH = open(f"ICA2/{QueryBr}/{QueryD}_Coil.gb").read()
+                        time.sleep(1)
+                        print(f"Showing you the coiled-coil prediction report:")
+                        time.sleep(1)
+                        print(TempFileH)
+                        time.sleep(3)
+                        print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_Coil.gb>")
+                        continue
+
                 elif QueryI == '5': # For "Predict secondary structure" with EMBOSS garnier
-                    time.sleep(1)
-                    print("You have selected to predict secondary structure.")
-                    time.sleep(1)
-                    print(f"I will help you to predict the secondary structure for the protein sequence {QueryD} and write the report in Genbank format.")
-                    time.sleep(1)
-                    print("Predicting the secondary structure...")
-                    # EMBOSS garnier
-                    time.sleep(3)
-                    subprocess.call(f"garnier -sequence -sprotein1 -fformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
-                    print
-                    print("Prediction complete!")
-                    TempFileI = open(f"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb").read()
-                    time.sleep(1)
-                    print("Showing you the secondary structure prediction report:")
-                    time.sleep(1)
-                    print(TempFileI)
-                    time.sleep(3)
-                    print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb>")
-                    break
+                        time.sleep(1)
+                        print("You have selected to predict secondary structure.")
+                        time.sleep(1)
+                        print(f"I will help you to predict the secondary structure for the protein sequence {QueryD} and write the report in Genbank format.")
+                        time.sleep(1)
+                        print("Predicting the secondary structure...")
+                        time.sleep(3)
+                        # EMBOSS garnier
+                        subprocess.call(f"garnier -sequence -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -full -outfile -rformat2 gb \"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb\" ", shell=True) # Let's standardise the input and output file in Genbank (.gb) format
+                        print
+                        print("Prediction complete!")
+                        TempFileI = open(f"ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb").read()
+                        time.sleep(1)
+                        print("Showing you the secondary structure prediction report:")
+                        time.sleep(1)
+                        print(TempFileI)
+                        time.sleep(3)
+                        print(f"I have saved a copy of this report as <ICA2/{QueryBr}/{QueryD}_PredSecStructure.gb>")
+                        continue
+                        
+                elif QueryI == '0': # For "Start again"
+                        print("I am still working on looping back the script to call the first function. But for now, I am afraid you will need to run this script again.")
+                        
+                elif QueryI == '99': # For "Do nothing"
+                        print("Okay, will not do any further analysis for now...")
 
                 else:
-                    print("Input your selection number 1-3")
-                    continue
+                        print("Input your selection number from 0 to 9 or 99!")
+                        continue
+                
+                break
 
             break
+
         elif QueryX.lower() in OptionB:
             print("You can run this programme again when you are ready.")
-            break
+            continue
         else:
             print("Answer yes or no only.")
             continue

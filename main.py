@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
-import os, sys, shutil
-import re # Useful to help us locate a specific motif in our output files
-import subprocess # We will be running a lot of background functions that are non python-based
-import time # We will be putting some time gaps between each response/print statement
+import os, sys, shutil, re # For locating specific motifs in our output files
+import pandas as pd
+import numpy as np
+import subprocess # For running plenty of background functions that are not python-based
+import time # For putting time gaps between each response and print statement
 
+RunLoopX = True
 RunLoopA = True
 RunLoopB = True
 RunLoopC = True
@@ -12,6 +14,11 @@ RunLoopD = True
 RunLoopE = True
 RunLoopF = True
 RunLoopG = True
+
+OptionA = ['yes','y']
+OptionB = ['no','n']
+OptionC = ['eukaryotes']
+OptionD = ['prokaryotes']
 
 # Check if the directory ICA2 does not exist, we create one
 if not os.path.exists("ICA2"):
@@ -22,6 +29,42 @@ print("This programme will help you analyse protein sequences in the organism of
 time.sleep(1)
 print("If you know the NCBI Taxonomy ID for the organism you are interested in, you can specify it or search through the NCBI database for the ID.")
 time.sleep(1)
+
+while RunLoopX:
+    time.sleep(1)
+    print("How would you proceed?\n1) Input TaxonID 2) Search NCBI database")
+    time.sleep(1)
+    QueryU = input("Select your option: ").lower()
+    if QueryU == '1':
+        time.sleep(1)
+        break
+    elif QueryU == '2':
+        time.sleep(1)
+        print("You have selected to browse the NCBI database.")
+        time.sleep(1)
+        print("Select a phylum between eukaryotes or prokaryotes. Please ensure you spell them correctly.")
+        time.sleep(1)
+        QueryV = input("Select your option: ")
+        if QueryV.lower() in OptionC or OptionD:
+            time.sleep(1)
+            print(f"You have selected the phylum {QueryV}.")
+            time.sleep(1)
+            print(f"Fetching phylum {QueryV} information from NCBI database...")
+            time.sleep(3)
+            print("Information fetching successful!")
+            subprocess.call(f"wget -qO \"{QueryV}.csv\" \"ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/{QueryV}.txt\" ",shell=True)
+            print("This code here is stil being developed. Therefore, no further action will be taken from here until it is complete.")
+            # df = pd.read_csv('{QueryV}.tsv', sep="\t", na_values=['-'])
+            # df.index=df.apply(lambda x : "{} ({})".format(x['#Organism/Name'], x['BioSample Accession']), axis=1)
+            # len(df['Group'] == 'Cow')
+            # list(Cow['#Organism/Name'])
+            break
+        else:
+            print("Select a phylum between eukaryotes or prokaryotes. Please ensure you spell them correctly.")
+            continue
+    else:
+        print("Answer 1 or 2 only.")
+        continue
 
 OptionA = ['yes','y']
 OptionB = ['no','n']
@@ -362,7 +405,7 @@ while RunLoopA:
                     print("Plotting the graph...")
                     time.sleep(3)
                     # EMBOSS charge
-                    subprocess.call(f"charge -sprotein -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -goutfile \"{QueryD}_Charge\" -gdirectory \"ICA2/{QueryBr}\" ",shell=True) # Take input {QueryD} protein in gb format and generate output file in default charge format
+                    subprocess.call(f"charge -sprotein -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -goutfile \"{QueryD}_Charge\" -gdirectory \"ICA2/{QueryBr}\" ",shell=True) # Take input {QueryD} protein in gb format and generate output file in default charge and png formats
                     print("Plotting complete!")
                     time.sleep(1)
                     print("Showing you the graph output...")

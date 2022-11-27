@@ -174,7 +174,7 @@ while RunLoopXc:
         time.sleep(3)
         # Fetch all protein sequences in FASTA for all available accession entries
         subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format fasta > \"ICA2/{QueryBr}/{QueryBr}.fasta\" ",shell=True)
-        subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format gb > \"ICA2/{QueryBr}/{QueryBr}.gb\" ",shell=True)
+        # subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format gb > \"ICA2/{QueryBr}/{QueryBr}.gb\" ",shell=True) # We won't need to work with genbank file. Fasta will do.
         TempFileC = open(f"ICA2/{QueryBr}/{QueryBr}.fasta").read().upper()
         print(f"Would you like me to list down all the protein sequences available in Fasta? Just a warning, it can be overwhelming if you choose to: ")
         time.sleep(1)
@@ -184,13 +184,12 @@ while RunLoopXc:
             QueryC = input("Answer yes or no: ")
             if QueryC.lower() in OptionA:
                 time.sleep(1)
-                print(f"This is the list of all protein sequences in FASTA for {QueryB} across all organim species under the TaxonID {QueryA}.")
+                print(f"This is the list of all protein sequences in FASTA for {QueryB} across all organism species under the TaxonID {QueryA}.")
                 time.sleep(1)
                 print(TempFileC)
                 time.sleep(1)
-                print(f"I have saved this protein sequence in Fasta as <<ICA2/{QueryBr}/{QueryBr}.fasta>")
-                time.sleep(1)
-                print(f"And also a copy in Genbank format as <ICA2/{QueryBr}/{QueryBr}.gb")
+                print(f"I have saved these protein sequences in Fasta as <<ICA2/{QueryBr}/{QueryBr}.fasta>")
+                # print(f"And also a copy in Genbank format as <ICA2/{QueryBr}/{QueryBr}.gb")
                 time.sleep(3)
                 break
 
@@ -210,26 +209,22 @@ while RunLoopXc:
         # ASK USER TO INPUT ACCESSION NUMBER
         while RunLoopXg:
             QueryD = input('Input the accession number for the protein sequence of your choice: ')
-            # ERROR-TRAP FOR ACCESSION NUMBER
+            # ACCESSION ERROR TRAP 
+            # If the input accession number is not available in the acc file, the script will loop back to the top
+            # And ask the user to re-input the correect accession number
             time.sleep(1)
             print(f"You selected the protein sequence {QueryD}.")
-
-            with open(TempFileC,'r') as TempFileC1:
-                for line in TempFileC1:
-                    AccVal = re.search(f"{QueryD}", line)
-                    
-                    if AccVal is not None:
-                        print(f"Fetching the protein sequence {QueryD}...")
-                        subprocess.call(f"esearch -db protein -query \"{QueryD}[Accession]\" | efetch -format fasta > \"ICA2/{QueryBr}/{QueryD}.fasta\" ",shell=True) # Fetch protein sequence in fasta format to be shown on screen
-                        subprocess.call(f"esearch -db protein -query \"{QueryD}[Accession]\" | efetch -format gb > \"ICA2/{QueryBr}/{QueryD}.gb\" ",shell=True)
-                        TempFileD = open(f"ICA2/{QueryBr}/{QueryD}.fasta").read().upper() # Fetch protein sequence in gb format as this will be use dfor further analysis
-                        print(f"Would you like me to show you the protein sequence {QueryD} you selected in Fasta?")
-                        time.sleep(1)
-                        break
-
-                    else:
-                        print("Accession number not found. Input a valid accession number.")
-                        continue
+            # with open(f"ICA2/{QueryBr}/{QueryBr}.acc") as AccFile:
+            #    AccVal = AccFile.readlines()
+            #    for line in AccVal:
+            #        if QueryD in line:
+            time.sleep(1)
+            print(f"Fetching the protein sequence {QueryD}...")
+            subprocess.call(f"esearch -db protein -query \"{QueryD}[Accession]\" | efetch -format fasta > \"ICA2/{QueryBr}/{QueryD}.fasta\" ",shell=True) # Fetch protein sequence in fasta format to be shown on screen
+            TempFileD = open(f"ICA2/{QueryBr}/{QueryD}.fasta").read().upper() # Fetch protein sequence in gb format as this will be use dfor further analysis
+            print(f"Would you like me to show you the protein sequence {QueryD} you selected in Fasta?")
+            time.sleep(1)
+            break
 
         # ASK USER TO VIEW CHOSEN PROTEIN SEQUENCE
         while RunLoopXe:
@@ -242,7 +237,7 @@ while RunLoopXc:
                 time.sleep(1)
                 print(f"I have saved this protein sequence in Fasta format as <ICA2/{QueryBr}/{QueryD}.fasta>")
                 print(f"And also a copy in Genbak format as <ICA2/{QueryBr}/{QueryD}.gb>")
-                time.sleep(3) # Allow some time for the user to look at and process the input sequence
+                time.sleep(3)
                 break
             elif QueryE.lower() in OptionB:
                 print("We can view the protein sequence later.")
@@ -301,7 +296,7 @@ while RunLoopXc:
 
         print("------------------------------")
         time.sleep(1)
-        print(f"We will begin running mutiple sequence alignment (MSA) with ClustalO for all the protein sequences for {QueryD} in the organism species under the TaxonID {queryA}.")
+        print(f"We will begin running mutiple sequence alignment (MSA) with ClustalO for all the protein sequences for {QueryD} in the organism species under the TaxonID {QueryA}.")
         time.sleep(1)
         print(f"Running MSA with ClustalO on all {QueryB} protein sequences...")
         time.sleep(3)
@@ -339,7 +334,7 @@ while RunLoopXc:
 
         # ASK USER TO SELECT FURTHER PROTEIN ANALYSIS
         while RunLoopXi:
-            QueryI = input("Select one protein analysis from the following:\n1) Plot interactive multiple sequence alignment (for publication purposes)\n2) Analyse consensus in multiple sequence alignment\n3) Plot conserved regions in amino acid residues\n4) Search motifs in amino acid residues\n5) Determine charges in amino residues\n6) Predict protein secondary structure\n7) Predict coiled-coil likelihood\n8) Predict helical wheel\n0) Start over\n99) Do nothing\nInput your selection: ")
+            QueryI = input("Select one protein analysis from the following:\n1) Plot interactive multiple sequence alignment (for publication purposes)\n2) Analyse consensus in multiple sequence alignment\n3) Plot conserved regions in amino acid residues\n4) Search motifs in amino acid residues\n5) Determine charges in amino residues\n6) Predict protein secondary structure\n7) Predict coiled-coil likelihood\n8) Predict helical wheel\n0) Exit\n99) Start over\nInput your selection: ")
             if QueryI == '1': # For "Plot interactive multiple sequence alignment” with EMBOSS showalign
                 time.sleep(1)
                 print("You have selected to plot interactive multiple sequence alignment.")
@@ -423,7 +418,7 @@ while RunLoopXc:
                 print(f"Searching for motifs in the protein sequence {QueryD}...")
                 time.sleep(3)
                 # EMBOSS patmatmotifs
-                subprocess.call(f"patmatmotifs -full -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Motif.dbmotif\" ",shell=True) # Use input {QueryD} protein in gb format and generate output file in default dbmotif format
+                subprocess.call(f"patmatmotifs -full -sprotein1 -sformat fasta \"ICA2/{QueryBr}/{QueryD}.fasta\" -outfile \"ICA2/{QueryBr}/{QueryD}_Motif.dbmotif\" ",shell=True) # Use input {QueryD} protein in gb format and generate output file in default dbmotif format
                 print("Motifs search complete!")
                 TempFileI = open(f"ICA2/{QueryBr}/{QueryD}_Motif.dbmotif").read()
                 time.sleep(1)
@@ -447,7 +442,7 @@ while RunLoopXc:
                 print("Plotting the graph...")
                 time.sleep(3)
                 # EMBOSS charge
-                subprocess.call(f"charge -sprotein -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -goutfile \"{QueryD}_Charge\" -gdirectory \"ICA2/{QueryBr}\" ",shell=True) # Take input {QueryD} protein in gb format and generate output file in default charge and png formats
+                subprocess.call(f"charge -sprotein -sformat fasta \"ICA2/{QueryBr}/{QueryD}.fasta\" -outfile \"ICA2/{QueryBr}/{QueryD}_Charge.charge\" -plot -graph png -goutfile \"{QueryD}_Charge\" -gdirectory \"ICA2/{QueryBr}\" ",shell=True) # Take input {QueryD} protein in gb format and generate output file in default charge and png formats
                 print("Plotting complete!")
                 time.sleep(1)
                 print("Showing you the graph output...")
@@ -474,7 +469,7 @@ while RunLoopXc:
                 print("Predicting the secondary structure...")
                 time.sleep(3)
                 # EMBOSS garnier
-                subprocess.call(f"garnier -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -outfile \"{QueryD}_PredictedStructure.tagseq\" -rdirectory2 \"ICA2/{QueryBr}\" ", shell=True) # Take input {QueryD} protein in gb format and generate output in default tagseq format
+                subprocess.call(f"garnier -sprotein1 -sformat fasta \"ICA2/{QueryBr}/{QueryD}.fasta\" -outfile \"{QueryD}_PredictedStructure.tagseq\" -rdirectory2 \"ICA2/{QueryBr}\" ", shell=True) # Take input {QueryD} protein in gb format and generate output in default tagseq format
                 print
                 print("Prediction complete!")
                 TempFileJ = open(f"ICA2/{QueryBr}/{QueryD}_PredictedStructure.tagseq").read()
@@ -497,7 +492,7 @@ while RunLoopXc:
                 print(f"Calculating the coiled-coil probability for every 15 residues...")
                 time.sleep(3)
                 # EMBOSS pepcoil
-                subprocess.call(f"pepcoil -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -window 15 -outfile \"ICA2/{QueryBr}/{QueryD}_Coil.pepcoil\" ",shell=True) # Take input {QueryD} protein in gb format and generate output in default pepcoil format
+                subprocess.call(f"pepcoil -sprotein1 -sformat fasta \"ICA2/{QueryBr}/{QueryD}.fasta\" -window 15 -outfile \"ICA2/{QueryBr}/{QueryD}_Coil.pepcoil\" ",shell=True) # Take input {QueryD} protein in gb format and generate output in default pepcoil format
                 print
                 print("Calculation complete!")
                 TempFileK = open(f"ICA2/{QueryBr}/{QueryD}_Coil.pepcoil").read()
@@ -520,25 +515,27 @@ while RunLoopXc:
                 print(f"Predicting helical wheel...")
                 time.sleep(3)
                 # EMBOSS pepwheel
-                subprocess.call(f"pepwheel -sprotein1 -sformat gb \"ICA2/{QueryBr}/{QueryD}.gb\" -graph png -goutfile \"{QueryD}_Wheel\" -gdirectory \"ICA2/{QueryBr}\" ", shell=True) # Take input {QueryD} protein in gb format and generate output in default png format
+                subprocess.call(f"pepwheel -sprotein1 -sformat fasta \"ICA2/{QueryBr}/{QueryD}.fasta\" -graph png -goutfile \"{QueryD}_Wheel\" -gdirectory \"ICA2/{QueryBr}\" ", shell=True) # Take input {QueryD} protein in gb format and generate output in default png format
                 print
                 print("Prediction complete!")
-                TempFileK = open(f"ICA2/{QueryBr}/{QueryD}_Coil.pepcoil").read()
                 time.sleep(1)
-                print(f"Showing you the coiled-coil prediction output:")
-                time.sleep(1)
-                print(TempFileK)
+                print(f"Showing you the helical wheel diagram...")
+                import matplotlib.pyplot as plt
+                import matplotlib.image as mpimg
+                TempGraph3 = mpimg.imread(f'ICA2/{QueryBr}/{QueryD}_Wheel.1.png') # By default, charge will add number 1 in the output file name so we have to specify it for path finding
+                plt.imshow(TempGraph3)
+                plt.show()
                 time.sleep(3)
-                print(f"I have saved a copy of this output as <ICA2/{QueryBr}/{QueryD}_Coil.pepcoil>")
+                print(f"I have saved a copy of this output as <ICA2/{QueryBr}/{QueryD}_Wheel.1.png>")
                 time.sleep(1)
                 print("------------------------------")
                 continue
 
-            elif QueryI == '0': # For "Start all over again"
+            elif QueryI == '0': # For "Exit"
+                print("Okay, we will not do any further analysis for now...")
                 break
 
-            elif QueryI == '99': # For "Do nothing"
-                print("Okay, we will not do any further analysis for now...")
+            elif QueryI == '99': # For "Start over"
                 break
                  
             else:

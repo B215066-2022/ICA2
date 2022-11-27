@@ -6,75 +6,92 @@ import numpy as np
 import subprocess # For running plenty of background functions that are not python-based
 import time # For putting time gaps between each response and print statement
 
-RunLoopX = True
-RunLoopA = True
+RunLoopXa = True # Used in the first section when the programme starts
+RunLoopXb = True # Used in the "ASK USER TO CHOOSE BETWEEN TAXONID AND SEARCH NCBI DATABASE" section 
+RunLoopXc = True # Used in the "ASK USER TO INPUT TAXONID AND PROTEIN FAMILY" section
+
 RunLoopB = True
 RunLoopC = True
 RunLoopD = True
 RunLoopE = True
 RunLoopF = True
-RunLoopG = True
+RunLoopG = True # Used in the "ASK USER TO SELECT FURTHER PROTEIN ANALYSIS" section
+RunLoopH = True
 
+OptionX = ['eukaryotes','prokaryotes']
 OptionA = ['yes','y']
 OptionB = ['no','n']
-OptionC = ['eukaryotes']
-OptionD = ['prokaryotes']
 
-# Check if the directory ICA2 does not exist, we create one
+# Create a new working directory "ICA2", if it does not already exist
 if not os.path.exists("ICA2"):
-	os.mkdir("ICA2")
+    os.mkdir("ICA2")
 
+# PROGRAMME STARTS
 print("-----------------------------")
 print("This programme will help you analyse protein sequences in the organism of your choice.")
 time.sleep(1)
-print("If you know the NCBI Taxonomy ID for the organism you are interested in, you can specify it or search through the NCBI database for the ID.")
+print("If you know the TaxonID for the organism species you are interested in, you can specify it.")
+time.sleep(1)
+print("Alternatively, you can search through the NCBI database for the TaxonID.")
 time.sleep(1)
 
-while RunLoopX:
-    time.sleep(1)
-    print("How would you proceed?\n1) Input TaxonID 2) Search NCBI database")
+# ASK USER TO CHOOSE BETWEEN TAXONID AND SEARCH NCBI DATABASE" section 
+while RunLoopXa:
+    print("How would you proceed?\n1) Input TaxonID\n2) Search NCBI database")
     time.sleep(1)
     QueryU = input("Select your option: ").lower()
+    
     if QueryU == '1':
-        time.sleep(1)
         break
+    
     elif QueryU == '2':
-        time.sleep(1)
+        print("-----------------------------")
         print("You have selected to browse the NCBI database.")
         time.sleep(1)
-        print("Select a phylum between eukaryotes or prokaryotes. Please ensure you spell them correctly.")
+        print("Select a phylum between eukaryotes or prokaryotes.")
         time.sleep(1)
-        QueryV = input("Select your option: ")
-        if QueryV.lower() in OptionC or OptionD:
-            time.sleep(1)
-            print(f"You have selected the phylum {QueryV}.")
-            time.sleep(1)
-            print(f"Fetching phylum {QueryV} information from NCBI database...")
-            time.sleep(3)
-            print("Information fetching successful!")
-            subprocess.call(f"wget -qO \"{QueryV}.csv\" \"ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/{QueryV}.txt\" ",shell=True)
-            print("This code here is stil being developed. Therefore, no further action will be taken from here until it is complete.")
-            # df = pd.read_csv('{QueryV}.tsv', sep="\t", na_values=['-'])
-            # df.index=df.apply(lambda x : "{} ({})".format(x['#Organism/Name'], x['BioSample Accession']), axis=1)
-            # len(df['Group'] == 'Cow')
-            # list(Cow['#Organism/Name'])
-            break
-        else:
-            print("Select a phylum between eukaryotes or prokaryotes. Please ensure you spell them correctly.")
-            continue
+        print("Please ensure you spell them correctly.")
+        time.sleep(1)
+
+        while RunLoopXa:
+            QueryV = input("Select your option: ")
+            if QueryV.lower() in OptionX:
+                print("-----------------------------")
+                print(f"You have selected the phylum {QueryV}.")
+                time.sleep(1)
+                print(f"Fetching phylum {QueryV} information from the NCBI database...")
+                time.sleep(3)
+                subprocess.call(f"wget -qO \"ICA2/{QueryV}.csv\" \"ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/{QueryV}.txt\" ",shell=True)
+                print("Information fecthing successful!")
+                time.sleep(1)
+                print("Sorry, this code section here is stil being developed. For now, you will be taken to input the TaxonID and protein family name.")
+                # df = pd.read_csv('{QueryV}.tsv', sep="\t", na_values=['-'])
+                # df.index=df.apply(lambda x : "{} ({})".format(x['#Organism/Name'], x['BioSample Accession']), axis=1)
+                # len(df['Group'] == 'Cow')
+                # list(Cow['#Organism/Name'])
+                break
+            elif QueryV.lower() not in OptionX: 
+                print("Invalid phylum.")
+                time.sleep(1)
+                print("Select a phylum between eukaryotes or prokaryotes. Please ensure you spell them correctly.")
+                time.sleep(1)
+                continue
+            else:
+                break
+
     else:
         print("Answer 1 or 2 only.")
         continue
 
-OptionA = ['yes','y']
-OptionB = ['no','n']
+    break
 
-while RunLoopA:
+while RunLoopXc:
+    # ASK USER TO INPUT TAXONID AND PROTEIN FAMILY NAME
     print("-----------------------------")
     print("I need you to specify the TaxonID for the organism where your protein may be found.")
     time.sleep(1)
     print("For example: For the mosquito family Cullinicea, input the TaxonID 7157.")
-    time.sleep(1)    
+    time.sleep(1)     
     QueryA = input('Please input the taxononmy ID of your organism now: ')
     print("------------------------------")
     print("Now, I need you to specify the family of protein you are interested in.")
@@ -82,10 +99,10 @@ while RunLoopA:
     print("For example: Hydrolase or trehalose-6-phosphate synthase.")
     time.sleep(1)
     QueryB = input('Please input the name of your protein family now: ')
-    # Python has a weird way of parsing user-input responses containing spaces into filenames in which the output names  will either be truncated or miss the intended file extensions
-    # Replacing these spaces into underscores should fix the problem
+    # Python has a weird way of parsing user-input responses containing spaces into filenames
+    # The output names always end up either truncated or miss the appropriate file extensions
+    # Replacing these spaces into underscores should immediately fix the problem
     QueryBr = QueryB.replace(' ','_')
-    
     print("------------------------------")
     print(f"You have specified the protein family {QueryB} across all organism species under the TaxonID {QueryA}.")
     time.sleep(1)
@@ -97,24 +114,42 @@ while RunLoopA:
         # Make a directory for the given protein family name so that we can store all analysis output files into the same directory
         if not os.path.exists(f"ICA2/{QueryBr}"):
             os.mkdir(f"ICA2/{QueryBr}")
-        print(f"------------------------------")
-        print(f"We will now begin searching the NCBI database for protein entries of {QueryB} across all organism species under the TaxonID {QueryA}.")
-        time.sleep(1)
-        print(f"Fetching protein entries...")
-        time.sleep(3)
+        
+        # We no longer think this step is necessary
+        # We can count the number of entries, if any, in the next step where we fetch the UID or the Acession#
+        # print(f"------------------------------")
+        # print(f"We will now begin searching the NCBI database for protein entries of {QueryB} across all organism species under the TaxonID {QueryA}.")
+        # print(f"Fetching protein entries...")
         # Search against the NCBI database for the user-input protein family across all species under the specified taxon group
-        subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] and {QueryB}\" > \"ICA2/{QueryBr}/CountsCheck.txt\" ",shell=True)
-        TempFile0 = open(f"ICA2/{QueryBr}/CountsCheck.txt").read().upper()
-        print(TempFile0)
+        # subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] and {QueryB}\" > \"ICA2/{QueryBr}/CountsCheck.txt\" ",shell=True)
+        # TempFile0 = open(f"ICA2/{QueryBr}/CountsCheck.txt").read().upper()
+        # print(TempFile0)
+
         print("------------------------------")
-        print(f"We will now begin fetching all the entries in the form of UID for {QueryB} across all organism species under the TaxonID {QueryA}.")
+        print(f"We will now begin fetching all the protein entries for {QueryB} across all organism species under the TaxonID {QueryA}.")
         time.sleep(1)
         print("Fetching UID entries (this may take a moment)...")
         time.sleep(3)
         # Search against the NCBI database for the user-input protein family across all species under the specified taxon group and fetch their UID#
         subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format uid > \"ICA2/{QueryBr}/{QueryBr}.gis\" ",shell=True)
-        TempFileA = open(f"ICA2/{QueryBr}/{QueryBr}.gis").read().upper()
-        print(TempFileA)
+        print("Fetching successful!")
+        time.sleep(1)
+        UIDcount = len(open(f"ICA2/{QueryBr}/{QueryBr}.gis").readlines())
+        print("Number of protein entries found:",UIDcount)
+
+        # UID ERROR TRAP
+        # If the UID count is 0, this will loop the script back to the first step 
+        # And ask the user to re-input the TaxonID and the protein family name 
+        if UIDcount < 1:
+            print("Sorry, there are no entries found for the protein family {QueryB} under the TaxonID {QueryA}.")
+            time.sleep(1)
+            print("Please consider a different TaxonID or proetin family.")
+            continue
+
+        else:
+            time.sleep(1)
+            print("Proceeding to the next step...")
+            
         print("------------------------------")
         print(f"We will now begin fetching all the protein entries in the form of accession numbers for {QueryB} across all orgaism species under the TaxonID {QueryA}.")
         time.sleep(1)
@@ -137,6 +172,10 @@ while RunLoopA:
         time.sleep(1)
         print("Fetching the protein sequences (this may take a moment)... ")
         time.sleep(3)
+        # Fetch all protein sequences in FASTA for all available accession entries
+        subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format fasta > \"ICA2/{QueryBr}/{QueryBr}.fasta\" ",shell=True)
+        subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format gb > \"ICA2/{QueryBr}/{QueryBr}.gb\" ",shell=True)
+        TempFileC = open(f"ICA2/{QueryBr}/{QueryBr}.fasta").read().upper()
         # Fetch all protein sequences in FASTA for all available accession entries
         subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format fasta > \"ICA2/{QueryBr}/{QueryBr}.fasta\" ",shell=True)
         subprocess.call(f"esearch -db protein -query \"txid{QueryA}[Organism:exp] AND {QueryB}\" | efetch -format gb > \"ICA2/{QueryBr}/{QueryBr}.gb\" ",shell=True)
@@ -510,7 +549,3 @@ while RunLoopA:
     elif QueryX.lower() in OptionB:
         print("You can run this programme again when you are ready.")
         break
-
-    else:
-        print("Answer yes or no only.")
-        continue
